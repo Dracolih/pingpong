@@ -17,7 +17,7 @@ import java.awt.event.KeyListener;
  * @author Michal Blotko
  * @version 1.0, 17 Styczen 2019
  */
-public class Ping_Pong extends Applet implements Runnable, KeyListener {
+public class PingPong extends Applet implements Runnable, KeyListener {
 
     final int WYS=500, SZER=500;
     Thread thread;
@@ -39,7 +39,7 @@ public class Ping_Pong extends Applet implements Runnable, KeyListener {
 
         this.resize(SZER,WYS);
         startGry=false;
-        paletkaGracza = new PaletkaSterowana(1);
+        paletkaGracza = new PaletkaSterowana();
         pilka = new Pilka();
 
         this.addKeyListener(this);
@@ -63,29 +63,29 @@ public class Ping_Pong extends Applet implements Runnable, KeyListener {
      */
 
     public void paint(Graphics game){
-        grafika.setColor(Color.black); //Tło czarne
-        grafika.fillRect(0,0,SZER,WYS); //Wypelnij cale tlo
+        grafika.setColor(Color.black);
+        grafika.fillRect(0,0,SZER,WYS);
 
 
         //Koniec gry jesli pilka wypadnie z ekranu
-        if(pilka.jakieX() < -10 /*|| pilka.jakieX() > (SZER+10)*/ ){
+        if(pilka.jakieX() < -10 ){
             grafika.setColor(Color.green);
-            grafika.drawString("Koniec gry",220,230 );
+            grafika.drawString("Koniec gry",220,220 );
             grafika.drawString("Punkty zdobyte:", 210,240);
-            grafika.drawString(Integer.toString(pilka.ilePunktow()),250,250);
+            grafika.drawString(Integer.toString(pilka.ilePunktow()),250,260);
         }
         else {
-
-            paletkaGracza.rysowaniePaletki(grafika); //Narysuj paletke
-            pilka.rysujPilke(grafika); //Narysuj pilke
+            paletkaGracza.rysowaniePaletki(grafika);
+            pilka.rysujPilke(grafika);
             grafika.setColor(Color.pink);
-            grafika.drawString("Biezacy wynik:",230,20);
+            grafika.drawString("Biezacy wynik:",220,20);
             grafika.drawString(Integer.toString(pilka.ilePunktow()),250,30);
         }
+
         if (startGry == false){
             grafika.setColor(Color.gray);
-            grafika.drawString("Aby rozpoczac nacisnij spacje",180,150);
-            grafika.drawString("Sterowanie odbywa sie za pomoca klawiszy W oraz S",100,170);
+            grafika.drawString("Aby rozpoczac nacisnij klawisz Spacji",150,150);
+            grafika.drawString("Sterowanie odbywa sie za pomoca klawiszy  W oraz S",110,170);
         }
         game.drawImage(obraz,0,0,this);
     }
@@ -112,59 +112,73 @@ public class Ping_Pong extends Applet implements Runnable, KeyListener {
 
 
 
-                while(true){
-                    if(startGry == true){
-                    paletkaGracza.ruchPaletki();
-                    pilka.ruchPilki();
-                    pilka.odbicieOdPaletki(paletkaGracza);
-                    }
+        while(true){
+            if(startGry == true){
+                paletkaGracza.ruchPaletki();
+                pilka.ruchPilki();
+                pilka.odbicieOdPaletki(paletkaGracza);
+                pilka.zwiekszPredkosc(pilka.ilePunktow());
+            }
 
-                    repaint();
-                    try {
-                        Thread.sleep(10); //Czekanie 10 ms
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            repaint();
+            try {
+                Thread.sleep(10); //Czekanie 10 ms
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-                }
+        }
 
     }
 
     /**Metoda wymagana przez interfejs KeyEvent
      *
      * @param e obiekt typu KeyEvent
-     *          odpowiedzialny
+     *
      */
+
     public void keyTyped(KeyEvent e){
 
     }
 
-    /**
+    /**Metoda wymagana przez interfejs KeyEvent
+     * odpowiada za obslugiwanie naciskania klawiszy
+     * W - dla ruchu paletki w gore
+     * S - dla ruchu paletki w dol
+     * Spacji - dla rozpoczecia gry
      *
-     * @param e
+     * @param e obiekt typu KeyEvent
+     *          wymagany do uzycia metody
+     *          getKeyCode
+     *
      */
 
     public void keyPressed(KeyEvent e){
-        if(e.getKeyCode()== KeyEvent.VK_W){ //If wcisniete w gore
+        if(e.getKeyCode()== KeyEvent.VK_W){
 
-            paletkaGracza.przyspieszenieGora(true); //Jedz w gore
+            paletkaGracza.przyspieszenieGora(true);
         }
-        else if(e.getKeyCode()== KeyEvent.VK_S){ //If wcisniete w dol
+        else if(e.getKeyCode()== KeyEvent.VK_S){
 
-            paletkaGracza.przyspieszenieDol(true); //Jedz w dol
+            paletkaGracza.przyspieszenieDol(true);
         }
         else if(e.getKeyCode()==KeyEvent.VK_SPACE){
             startGry = true;
         }
     }
 
-    /**
+    /**Metoda wymagana przez interfejs KeyEvent
+     * odpowiada za przerwanie ruchu
+     * w momencie puszczenia klawiszy
+     * sterujacych ruchem paletki
      *
-     * @param e
+     * @param e obiekt typu KeyEvent
+     *          wymagany do uzycia metody
+     *          getKeyCode
      */
 
     public void keyReleased(KeyEvent e){
-        if(e.getKeyCode()== KeyEvent.VK_W){ //If wcisniete w gore
+        if(e.getKeyCode()== KeyEvent.VK_W){
             paletkaGracza.przyspieszenieGora(false);
         }
         else if(e.getKeyCode()== KeyEvent.VK_S){
