@@ -2,12 +2,12 @@ package com.dracolih.pong;
 
 import java.awt.*;
 
-/**Klasa odpowiedzialna za zachowanie
+/**Klasa odpowiedialna za zachowanie
  * paletki sterowanej przez gracza
  *
  *
  */
-public class PaletkaSterowana implements Paletka {
+public class PaletkaSterowana {
 
     private double yWspolrzednaPaletki,yPredkosc;
     private boolean przysGora,przysDol;

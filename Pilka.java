@@ -12,11 +12,11 @@ import java.util.Random;
  */
 public class Pilka {
     private Random rand = new Random();
-    private int xWspolrzednaPilki, yWspolrzednaPilki;
-    private double xPredkosc,yPredkosc;
+    private int xWspolrzednaPilki, yWspolrzednaPilki,punkty;
+    private double xPredkosc,yPredkosc,zmianaPredkosci;
     private final static int szerPilki=20,wysPilki=20;
-    private int punkty;
     private boolean zwiekszonoPredkoscX;
+
 
 
     /**
@@ -31,7 +31,7 @@ public class Pilka {
      */
 
     public Pilka(){
-
+        zmianaPredkosci=0.2;
         xWspolrzednaPilki = 350;
         yWspolrzednaPilki = 250;
         punkty=0;
@@ -59,7 +59,7 @@ public class Pilka {
     public void zwiekszPredkosc(int punktyGracza)
     {
         if(punktyGracza%3 == 0 && !zwiekszonoPredkoscX){
-            xPredkosc+=0.2;
+            xPredkosc+=zmianaPredkosci;
             zwiekszonoPredkoscX =true;
         }
         else if(punktyGracza%3 != 0){
@@ -116,7 +116,7 @@ public class Pilka {
      * @param paletkaPierwsza
      */
 
-    public void odbicieOdPaletki(Paletka paletkaPierwsza){
+    public void odbicieOdPaletki(PaletkaSterowana paletkaPierwsza){
         if (xWspolrzednaPilki <= 50 && xWspolrzednaPilki >= 30){
             if (yWspolrzednaPilki >= paletkaPierwsza.znajdzY() && yWspolrzednaPilki <= paletkaPierwsza.znajdzY()+80) {
                 if (xPredkosc < 0){
