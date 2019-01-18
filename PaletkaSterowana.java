@@ -2,87 +2,118 @@ package com.dracolih.pong;
 
 import java.awt.*;
 
+/**Klasa odpowiedzialna za zachowanie
+ * paletki sterowanej przez gracza
+ *
+ *
+ */
 public class PaletkaSterowana implements Paletka {
 
-    double y,yPredkosc;
-    boolean przysGora,przysDol;
-    int gracz, x,wysPaletki=80,szerPaletki=20;
-    double czuloscSterowania = 1;
+    private double yWspolrzednaPaletki,yPredkosc;
+    private boolean przysGora,przysDol;
+    private int gracz, xWspolrzednaPaletki,wysPaletki=80,szerPaletki=20;
+    private double czuloscSterowania = 0.5;
+    private int maxPredkosc = 5;
+    private final double HAMOWANIE = 0.95;
 
-    final double GRAVITY = 0.95; //Z duzych bo stala
-
-    public PaletkaSterowana(int gracz){ //Konstruktor
+    /**Konstruktor klasy PaletkaSterowana
+     * definuje predkosc poczatkowa paletki
+     * oraz miejsce w ktorym paletka zaczyna gre
+     *
+     */
+    public PaletkaSterowana(){
         przysGora = false;
         przysDol = false;
-        y = 210; // Zaczynamy na srodku
-        yPredkosc = 0; //Zaczynamy stojac w miejscu
 
-        if (gracz == 1){
-            x=20; //Lewa strona
-        }
-        else {
-            x = 660; // Prawa strona
-        }
+        yWspolrzednaPaletki = 210;
+        xWspolrzednaPaletki =20;
+
+        yPredkosc = 0;
 
     }
 
+    /**Metoda odpowiedzialna za zwiekszenie predkosci ruchu
+     * w gore Paletki
+     * wywolywana w metodzie KeyPressed i KeyReleased
+     * @param wej zmienna typu boolean
+     *            przypisywana do zmiennej przysGora
+     */
     public void przyspieszenieGora(boolean wej){
         przysGora = wej;
     }
 
+    /**Metoda odpowiedzialna za zwiekszenie predkosci ruchu
+     * w dol Paletki
+     * wywolywana w metodzie KeyPressed i KeyReleased
+     * @param wej zmienna typu boolean
+     *            przypisywana do zmiennej przysDol
+     */
     public void przyspieszenieDol(boolean wej){
         przysDol = wej;
     }
 
 
+    /** Metoda odpowiedzialna za rysowanie ksztaltu paletki
+     * czerwony prostokat o wymiarach zdediniowanych na poczatku klasy
+     * @param game obiekt typu Graphics potrzebny do
+     *             wywolania metod ktore rysuja ksztalt prostokata
+     *             i wypelniaja go kolorem
+     */
     public void rysowaniePaletki(Graphics game) {//Rysowanie paletki
         game.setColor(Color.red);   //Kolor paletki
-        game.fillRect(x, (int) y, szerPaletki,wysPaletki); //Rozmiar paletki
+        game.fillRect(xWspolrzednaPaletki, (int) yWspolrzednaPaletki, szerPaletki,wysPaletki); //Rozmiar paletki
 
     }
 
-    //Metoda odpowiedzialna za ruch w gore i dol
+    /**Metoda odpowiedzialna za ruch w gore i dol
+     * im wieksza wartosc czuloscSterowania
+     * tym szybciej porusza sie paletka
+     * im wieksza wartosc HAMOWANIE
+     * tym szybciej paletka zatrzymuje sie w miejscu
+     * predkosc paletki jest ograniczona do wartosci maxPredkosc
+     * Dodatkowo metoda sprawdza
+     * czy paletka nie osiagnela skraju ekranu gry
+     *
+     */
+
     public void ruchPaletki() {
 
         if (przysGora){
             yPredkosc -=czuloscSterowania;
-
         }
         else if (przysDol){
             yPredkosc +=czuloscSterowania;
         }
         else if (!przysDol && !przysGora){
-            yPredkosc *= GRAVITY; // * <1 = zmiejsza sie
+            yPredkosc *= HAMOWANIE; // * <1 = zmiejsza sie
         }
-    //Ograniczenie predkosci paletki
-        if (yPredkosc >= 5){
-            yPredkosc = 5;
+        if (yPredkosc >= maxPredkosc){
+            yPredkosc = maxPredkosc;
         }
-
-        else if (yPredkosc <= -5){
-            yPredkosc = -5;
+        else if (yPredkosc <= -maxPredkosc){
+            yPredkosc = -maxPredkosc;
         }
 
-
-        y+=yPredkosc;
+        yWspolrzednaPaletki +=yPredkosc;
 
         //Jesli paletka dotknie gory
-        if (y<0){
-            y=0;
+        if (yWspolrzednaPaletki <0){
+            yWspolrzednaPaletki =0;
         }
-
-
         //Jesli paletka dotknie dolu
-        if (y>500-wysPaletki)
+        if (yWspolrzednaPaletki >500-wysPaletki)
         {
-            y=500-wysPaletki;
+            yWspolrzednaPaletki =500-wysPaletki;
         }
     }
 
 
+    /**Metoda pozwala odczytac wartosc yWspolrzednaPaletki
+     * poza klasa PaletkaSterowana
+     * @return zwraca wartosc yWspolrzednaPaletki
+     * w postaci zmiennej typu int
+     * */
     public int znajdzY() {
-
-
-        return (int)y;
+        return (int) yWspolrzednaPaletki;
     }
 }

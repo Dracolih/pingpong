@@ -5,26 +5,41 @@ import java.awt.Graphics;
 import java.util.Random;
 
 
+/**Klasa Pilka
+ * odpowiedzialna za rozmiar
+ * predkosc oraz zachowanie pilki
+ * w grze
+ */
 public class Pilka {
-    Random rand = new Random();
-    double x,y,xPredkosc,yPredkosc;
-    int szerPilki=20,wysPilki=20;
-    int punkty;
+    private Random rand = new Random();
+    private int xWspolrzednaPilki, yWspolrzednaPilki;
+    private double xPredkosc,yPredkosc;
+    private final static int szerPilki=20,wysPilki=20;
+    private int punkty;
+    private boolean zwiekszonoPredkoscX;
 
 
     /**
-     * Konstruktor dla klasyxp
+     * Konstruktor dla klasy Pilka
+     * definiuje rozmiar
+     * oraz predkosc poczatkowa Pilki
+     * Pilka rozpoczyna posrodku ekranu
+     * i zaczyna swoj ruch w kierunku prawej sciany
+     * aby gracz mogl dostosowac swoje zachowanie
+     * mozliwe jest tez pseudolosowe ustawienie kierunkow
+     * w jakich porusza sie pilka
      */
-    //Konstruktor
-    public Pilka(){
-        //Pilka zaczyna na srodku ekranu
-        x=350;
-        y=250;
-        punkty=0;
 
-        //Kierunek w ktorym pilka zaczyna leciec
-        xPredkosc=(double)rand.nextInt(10)-5;
-        yPredkosc=(double)rand.nextInt(10)-5;
+    public Pilka(){
+
+        xWspolrzednaPilki = 350;
+        yWspolrzednaPilki = 250;
+        punkty=0;
+        zwiekszonoPredkoscX=false;
+        xPredkosc=2;
+               /* rand.nextInt(10)-5;*/
+        yPredkosc=3;
+                /*rand.nextInt(10)-5;*/
         if (xPredkosc==0){
             xPredkosc=1;
         }
@@ -34,62 +49,89 @@ public class Pilka {
 
 
     }
-    public void zwiekszPredkosc(int x)
-    {
 
+    /**Metoda ktora zwieksza predkosc w zaleznosci od
+     * ilosci punktow jakie zdobyl gracz
+     * w trakcie rozgrywki
+     * @param punktyGracza zmienna w ktorej przekazujemy
+     *                     punkty zdobyte przez gracza
+     */
+    public void zwiekszPredkosc(int punktyGracza)
+    {
+        if(punktyGracza%3 == 0 && !zwiekszonoPredkoscX){
+            xPredkosc+=0.2;
+            zwiekszonoPredkoscX =true;
+        }
+        else if(punktyGracza%3 != 0){
+            zwiekszonoPredkoscX =false;
+        }
     }
 
+    /** Metoda rysujaca ksztalt pilki i nadajaca jej kolor
+     * @param ball obiekt typu graphics
+     *             potrzebny do wywolania metod
+     *             rysujacej owal pilki
+     *             i wypelniajacej go kolorem turkusowym
+     */
     public void rysujPilke(Graphics ball){
         ball.setColor(Color.cyan);
-        ball.fillOval((int)x-(szerPilki/2),(int)y-(wysPilki/2),szerPilki,wysPilki);
+        ball.fillOval((int) xWspolrzednaPilki -(szerPilki/2),(int) yWspolrzednaPilki -(wysPilki/2),szerPilki,wysPilki);
     }
 
 
-    /**
+    /**Metoda odpowiedzialna za
+     * przemieszczanie sie po polu gry oraz
+     * odbicie pilki od gornej, dolnej i prawej krawedzi
      *
      */
     public void ruchPilki(){
-        x+=xPredkosc;
-        y+=yPredkosc;
+        xWspolrzednaPilki +=xPredkosc;
+        yWspolrzednaPilki +=yPredkosc;
 
-        //Odbicie pilki od gornej, dolnej i lewej krawedzi
-        if (y<(wysPilki/2)){
+
+        if (yWspolrzednaPilki <(wysPilki/2)){
             yPredkosc=-yPredkosc;
         }
-        if (y>(500-(wysPilki/2))){
+        if (yWspolrzednaPilki >(500-(wysPilki/2))){
             yPredkosc=-yPredkosc;
         }
-        //Prawa krawedz
-        if (x > 500){
+        if (xWspolrzednaPilki > 500){
             xPredkosc=-xPredkosc;
         }
     }
 
+    /** Metoda zwracajaca obecna liczbe punktow
+     * @return zwraca wartosc punktow
+     */
     public int ilePunktow(){
-return punkty;
+        return punkty;
     }
 
-    /**
-     * @param p1
+    /**Metoda ktora w momencie
+     * zetkniecie paletki z pilka
+     * zmienia wektor predkosci pilki na przeciwny
+     * i zwieksza liczbe punktow o 1
+     * warunek xPredkosc < 0
+     * sluzy zapobieganiu zaciecia sie pilki w paletce
+     * @param paletkaPierwsza
      */
-    //Jeśli pilka trafi w paletkę, odbij sie od niej
-    public void odbicieOdPaletki(Paletka p1){
-        if (x <= 50 && x >= 30){
-            if (y >= p1.znajdzY() && y <= p1.znajdzY()+80){
-                xPredkosc=-xPredkosc;
-                punkty+=1;
 
+    public void odbicieOdPaletki(Paletka paletkaPierwsza){
+        if (xWspolrzednaPilki <= 50 && xWspolrzednaPilki >= 30){
+            if (yWspolrzednaPilki >= paletkaPierwsza.znajdzY() && yWspolrzednaPilki <= paletkaPierwsza.znajdzY()+80) {
+                if (xPredkosc < 0){
+                    xPredkosc = -xPredkosc;
+                punkty += 1;
+                }
             }
         }
     }
 
+    /**Funkcja zwracaja wspolrzedna x pilki
+     * @return
+     */
     public int jakieX(){
-
-        return (int)x;
+        return xWspolrzednaPilki;
     }
 
-    public int jakieY(){
-
-        return (int)y;
-    }
 }
